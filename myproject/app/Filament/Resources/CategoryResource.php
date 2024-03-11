@@ -6,6 +6,8 @@ use App\Filament\Resources\CategoryResource\Pages;
 use App\Filament\Resources\CategoryResource\RelationManagers;
 use App\Models\Category;
 use Filament\Forms;
+use Filament\Forms\Components;
+
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -19,14 +21,31 @@ class CategoryResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup ='shop';
+    protected function getRedirectUrl(): string
+    {
+        $url = $this->getResource()::getUrl('index');
+        return $url;
+    }
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
-            ]);
+                Forms\Components\Group::make()
+                ->schema([
+                    Forms\Components\Section::make()
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                        ->label('Category Name')
+                        ->required()
+                        ->placeholder('Enter category name'),
+                    ])
+
+            ])
+        ]);
+
     }
+
 
     public static function table(Table $table): Table
     {

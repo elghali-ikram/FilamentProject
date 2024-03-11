@@ -19,12 +19,36 @@ class ProductResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup ='shop';
-
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Group::make()
+                ->schema([
+                    Forms\Components\Section::make()
+                    ->schema([
+                                        Forms\Components\TextInput::make('name')
+                    ->label('Product Name')
+                    ->required()
+                    ->placeholder('Enter product name'),
+                Forms\Components\Textarea::make('description')
+                    ->label('Description'),
+                Forms\Components\TextInput::make('price')
+                    ->label('Price')
+                    ->required()
+                    ->placeholder('0')
+                    ->numeric(),
+                Forms\Components\Select::make('category_id')
+                   ->relationship('category', 'name')
+                    ->required(),
+
+                    ])
+                ])
+
             ]);
     }
 
@@ -32,13 +56,23 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\TextColumn::make('description'),
+                Tables\Columns\TextColumn::make('price')
+                ->sortable(),
+                Tables\Columns\TextColumn::make('category.name')
             ])
             ->filters([
-                //
+                Tables\filters\SelectFilter::make('category_id')
+                ->label('category')
+                ->relationship('category', 'name'),
+
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -47,10 +81,12 @@ class ProductResource extends Resource
             ]);
     }
 
+
+
     public static function getRelations(): array
     {
         return [
-            //
+
         ];
     }
 
@@ -62,4 +98,5 @@ class ProductResource extends Resource
             'edit' => Pages\EditProduct::route('/{record}/edit'),
         ];
     }
+
 }
